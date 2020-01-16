@@ -12,11 +12,16 @@ def get_driver_for_chrome(step):
     step.behave_as("""
             Given 我获取系统环境变量参数
             And 我获取被测系统元素列表
+            And 我创建自定义测试数据
         """)
-
     world.driver = selenium_driver.Chrome()  # 获取driver
     world.driver.maximize_window()  # 将浏览器窗口最大化
     world.driver.implicitly_wait(10)  # 设置隐形等待直至加载完成
+
+
+@step('我访问亚马逊首页')
+def visit_website(step):
+    world.driver.get(world.config["host"])
 
 
 @step('我打开APP并设置重启为"(.*?)"')  # true或false
@@ -25,6 +30,7 @@ def get_driver_for_chrome(step, reset):
     step.behave_as("""
             Given 我获取系统环境变量参数
             And 我获取被测系统元素列表
+            And 我创建自定义测试数据
         """)
 
     app_apk_path = os.path.join(cur_path, 'app', world.config["app_info"]['appName'])
@@ -57,9 +63,3 @@ def get_driver_for_chrome(step, reset):
 @step('我关闭浏览器或设备')
 def close(step):
     world.driver.quit()
-
-
-# 将被测系统元素写入一个元素列表,用于随时提取使用(有一些操作需要元素才能完成)，因此被测系统的元素名称要保持独立性
-@step('我获取被测系统元素列表')
-def element_list(step):
-    world.element = {}

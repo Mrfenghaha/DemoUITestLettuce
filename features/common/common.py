@@ -1,28 +1,23 @@
 # -*- coding:utf-8 -
-import os
-import sys
 import time
 from lettuce import *
 from selenium.webdriver.common.by import By
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions
 from selenium.common.exceptions import NoSuchElementException
 from appium.webdriver.common.touch_action import TouchAction
 from appium.webdriver.common.multi_action import MultiAction
 
 
 # ````````````````````````````````````````基础操作封装````````````````````````````````````````
-@step('我点击文本"(.*?)"')
-def click_text(step, text):
-    element = (By.XPATH, '//*[text()="' + text + '"]')
+@step('我点击"(.*?)"')
+def click_element(step, element):
+    element = world.element[element]
     world.driver.find_element(*element).click()
 
 
-# ````````````````````````````````````````需要元素的特殊操作封装````````````````````````````````````````
-@step('I click element "(.*?)", if the button not exist, will try again click element "(.*?)", maximum (.*) times')
+@step('我点击一下"(.*?)"，如果不存在，我将点击"(.*?)"后再次尝试点击，最多(.*)次')
 def click_element_retry(step, element_a, element_b, num):
     element_a = world.element[element_a]
     element_b = world.element[element_b]
@@ -36,7 +31,25 @@ def click_element_retry(step, element_a, element_b, num):
             break
 
 
-@step('I click text "(.*?)", if the text not exist, will try again click element "(.*?)", maximum (.*) times')
+@step('我在"(.*?)"中输入"(.*?)"')
+def send_keys_for_element(step, element, text):
+    element = world.element[element]
+    world.driver.find_element(*element).send_keys(text)
+
+
+@step('我获取"(.*?)"文本内容')
+def get_element_text(step, element):
+    element = world.element[element]
+    world.text = world.driver.find_element(*element).text
+
+
+@step('我点击文本"(.*?)"')
+def click_text(step, text):
+    element = (By.XPATH, '//*[text()="' + text + '"]')
+    world.driver.find_element(*element).click()
+
+
+@step('我点击一下文本"(.*?)"，如果文本不存在，我将点击"(.*?)"后再次尝试点击，最多(.*)次')
 def click_text_retry(step, text, element, num):
     element_a = (By.XPATH, '//*[text()="' + text + '"]')
     element_b = world.element[element]
@@ -56,13 +69,13 @@ def contrast_equal(step, text):
     assert world.text == text
 
 
-@step('I check elements "(.*?)" is exist')
+@step('我检查元素"(.*?)"是否存在')
 def check_element_exist(step, element):
     element = world.element[element]
     assert world.driver.find_elements(*element) == []
 
 
-@step('I check elements "(.*?)" is not exist')
+@step('我检查元素"(.*?)"是否不存在')
 def check_element_no_exist(step, element):
     element = world.element[element]
     assert world.driver.find_elements(*element) != []
@@ -123,6 +136,50 @@ def keyboard(step, key, num):
 
 
 # ````````````````````````````````````````app常用操作封装````````````````````````````````````````
+# ````````````````````app设备滑屏操作````````````````````
+# 获取屏幕尺寸
+def get_screen_size():
+    x = world.driver.get_window_size()['width']
+    y = world.driver.get_window_size()['height']
+    return x, y
+
+
+@step('我操作手机设备，屏幕整体向"(.*?)"滑动(.*)次')
+def device_screen_swipe(step, way, num):
+    n = int(num)
+    # 滑动方法
+    size = get_screen_size()
+    x1 = int(size[0] * 0.3)
+    x2 = int(size[0] * 0.1)
+    x3 = int(size[0] * 0.9)
+    y1 = int(size[1] * 0.1)
+    y2 = int(size[1] * 0.8)
+    for i in range(n):
+        time.sleep(0.3)
+        if way == 'up':
+            world.driver.swipe(x1, y2, x1, y1, 1000)
+        elif way == 'down':
+            world.driver.swipe(x1, y1, x1, y2, 1000)
+        elif way == 'left':
+            world.driver.swipe(x3, y1, x2, y1, 1000)
+        elif way == 'right':
+            world.driver.swipe(x2, y1, x3, y1, 1000)
+        else:
+            print('way参数错误')
+    # 等待2s使滑动结束
+    time.sleep(0.5)
+
+
+# 屏幕滑动,至某元素出现
+@step('我操作手机设备，屏幕整体向"(.*?)"滑动直至元素"(.*?)"出现')
+def device_screen_swipe_custom(step, way, element):  # way只支持up、down、left、right
+    element = world.element[element]
+    while world.driver.find_elements(*element) == []:
+        step.behave_as("""Given 我操作手机设备，屏幕整体向"{way}"滑动1次""".format(way=way))
+        if world.driver.find_elements(*element) != []:
+            break
+
+
 # ````````````````````app设备权限授权````````````````````
 @step('我操作手机设备，进行GPS授权')
 def check_device_gps_btn(step):
@@ -263,52 +320,8 @@ def click_device_date_action(step, way, n):
         world.driver.find_element(*device_date_affirm_type).click()
 
 
-# ````````````````````app设备滑屏操作````````````````````
-# 获取屏幕尺寸
-def get_screen_size():
-    x = world.driver.get_window_size()['width']
-    y = world.driver.get_window_size()['height']
-    return x, y
-
-
-@step('我操作手机设备，屏幕整体向"(.*?)"滑动(.*)次')
-def device_screen_swipe(step, way, num):
-    n = int(num)
-    # 滑动方法
-    size = get_screen_size()
-    x1 = int(size[0] * 0.3)
-    x2 = int(size[0] * 0.1)
-    x3 = int(size[0] * 0.9)
-    y1 = int(size[1] * 0.1)
-    y2 = int(size[1] * 0.8)
-    for i in range(n):
-        time.sleep(0.3)
-        if way == 'up':
-            world.driver.swipe(x1, y2, x1, y1, 1000)
-        elif way == 'down':
-            world.driver.swipe(x1, y1, x1, y2, 1000)
-        elif way == 'left':
-            world.driver.swipe(x3, y1, x2, y1, 1000)
-        elif way == 'right':
-            world.driver.swipe(x2, y1, x3, y1, 1000)
-        else:
-            print('way参数错误')
-    # 等待2s使滑动结束
-    time.sleep(0.5)
-
-
-# 屏幕滑动,至某元素出现
-@step('I operate the phone device, "(.*?)" slide screen until find element "(.*?)"')
-def device_screen_swipe_custom(step, way, element):  # way只支持up、down、left、right
-    element = world.element[element]
-    while world.driver.find_elements(*element) == []:
-        step.behave_as("""Given 我操作手机设备，屏幕整体向"{way}"滑动1次""".format(way=way))
-        if world.driver.find_elements(*element) != []:
-            break
-
-
 # ````````````````````````````````````````错误重试封装````````````````````````````````````````
-@step('If the element "(.*?)" is exist, will retry click, maximum (.*) times')
+@step('如果"(.*?)"仍然存在，我将重试点击最多(.*)次')
 def click_error_retry_one(self, element, num):
     element = world.element[element]
     for n in range(int(num)):
@@ -320,7 +333,7 @@ def click_error_retry_one(self, element, num):
             world.driver.find_element(*element).click()
 
 
-@step('If the element "(.*?)" is exist, will retry click element "(.*?)", maximum (.*) times')
+@step('如果"(.*?)"仍存在，我将重试点击"(.*?)"最多(.*)次')
 def click_error_retry_two(self, element_a, element_b, num):
     element_a = world.element[element_a]
     element_b = world.element[element_b]
@@ -333,7 +346,7 @@ def click_error_retry_two(self, element_a, element_b, num):
             world.driver.find_element(*element_b).click()
 
 
-@step('If the element "(.*?)" not exist, will retry click element "(.*?)", maximum (.*) times')
+@step('如果"(.*?)"不存在，我将重试点击"(.*?)"最多(.*)次')
 def click_error_retry_three(self, element_a, element_b, num):
     element_a = world.element[element_a]
     element_b = world.element[element_b]
@@ -346,7 +359,7 @@ def click_error_retry_three(self, element_a, element_b, num):
             pass
 
 
-@step('If the element "(.*?)" is exist, will retry click until the element not exist')
+@step('如果"(.*?)"仍然存在，我将重试点击直至不存在该元素')
 def click_error_cycle_retry(self, element):
     element = world.element[element]
     while world.driver.find_elements(*element) != []:
