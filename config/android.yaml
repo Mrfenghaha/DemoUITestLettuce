@@ -1,0 +1,15 @@
+app_info:
+  # APP名称
+  appName: xxx
+  # APP包名
+  appPackage: xxx
+  # APP程序名
+  appActivity: xxx
+device_info:
+  # 设备版本号
+  platformVersion: 6.0
+  # 设备id
+  deviceName: 192.168.58.104:5555
+appium_info:
+  #appium所在ip以及端口号
+  appiumIp: http://127.0.0.1:4723/wd/hub

@@ -1,0 +1,6 @@
+selenium
+Appium-Python-Client
+PyYAML>=5.1.1
+PyMySQL
+pymongo
+lettuce
