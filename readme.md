@@ -29,7 +29,7 @@
 
 
 ## 用例分层概念
-![](https://github.com/fengyibo963/DemoUITest/blob/master/docs/%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84.png)
+![](https://github.com/fengyibo963/DemoUITestLettuce/blob/master/docs/%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84(%E5%88%86%E5%B1%82%E6%A6%82%E5%BF%B5).png)
 
 该框架分层使用PO设计模式，同时做了一些改进
 
@@ -61,11 +61,11 @@
 为了做到真正的自动化扩展使用数据生成器，使用生成器按照规则生成想要的数据字典，在编写TestCase的使用直接调用生成器并提取参数即可
 
 ## 编写规范介绍
-为了代码的可读性，指定了一些编写[规范]提供参考(https://github.com/fengyibo963/LettuceUITest/blob/master/docs/%E7%BC%96%E5%86%99%E8%AF%B4%E6%98%8E.md)说明（可根据自己喜好修改）
+为了代码的可读性，指定了一些编写[规范提供参考（可根据自己喜好修改）](https://github.com/fengyibo963/DemoUITestLettuce/blob/master/docs/%E7%BC%96%E5%86%99%E8%AF%B4%E6%98%8E.md)
 
 ## 项目结构详细介绍
 
-![](https://github.com/fengyibo963/LettuceUITest/blob/master/docs/%E9%A1%B9%E7%9B%AE%E7%9B%AE%E5%BD%95.png)
+![](https://github.com/fengyibo963/DemoUITestLettuce/blob/master/docs/%E9%A1%B9%E7%9B%AE%E7%9B%AE%E5%BD%95.png)
 
 ```
 |-- config
@@ -133,7 +133,9 @@ C:\Users\Administrator\AppData\Local\Programs\Python\Python36\Scripts
 客户端下载地址：https://github.com/appium/appium-desktop/releases
 
 Ubuntu安装参考[指南](https://blog.csdn.net/baidu_36943075/article/details/103985826)
+
 Mac安装参考指南[指南](https://www.jianshu.com/p/d36ff3707862)
+
 Windows安装参考[指南](https://www.cnblogs.com/lgqboke/p/9776503.html)
 
 ## 配置说明
