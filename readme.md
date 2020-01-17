@@ -1,3 +1,5 @@
+有非PO设计模式框架Demo在noPO分支
+
 # 框架介绍
 本框架使用Selenium、Appium、Lettuce工具，采用PO设计模式、关键字驱动、数据驱动、BDD，编写中文测试用例，实现Web、Android的UI自动化测试。
 
