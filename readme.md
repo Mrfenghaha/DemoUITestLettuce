@@ -121,14 +121,16 @@ C:\Users\Administrator\AppData\Local\Programs\Python\Python36\Scripts
 客户端下载地址：https://github.com/appium/appium-desktop/releases
 
 Ubuntu安装参考[指南](https://blog.csdn.net/baidu_36943075/article/details/103985826)
+
 Mac安装参考指南[指南](https://www.jianshu.com/p/d36ff3707862)
+
 Windows安装参考[指南](https://www.cnblogs.com/lgqboke/p/9776503.html)
 
 ## 配置说明
 配置env环境参数
-    * config/env.yaml文件,用于数据库连接、host设置
-    * 可以添加更多环境，直接添加相应的envXx.yaml文件即可，运行用例时使用Xx作为环境参数即可 
-    * 当需要多环境执行时，env.yaml文件变为数据传输中介不再需要维护
+* config/env.yaml文件,用于数据库连接、host设置
+* 可以添加更多环境，直接添加相应的envXx.yaml文件即可，运行用例时使用Xx作为环境参数即可 
+* 当需要多环境执行时，env.yaml文件变为数据传输中介不再需要维护
 
 ## 用例执行说明
 runcase.py脚本为功能测试用例执行统一入口
