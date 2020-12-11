@@ -11,13 +11,19 @@ from appium.webdriver.common.multi_action import MultiAction
 
 
 # ````````````````````````````````````````基础操作封装````````````````````````````````````````
+
+@step('我等待(.*)秒钟')
+def click_element(step, s):
+    time.sleep(int(s))
+
+
 @step('我点击"(.*?)"')
 def click_element(step, element):
     element = world.element[element]
     world.driver.find_element(*element).click()
 
 
-@step('我点击一下"(.*?)"，如果不存在，我将点击"(.*?)"后再次尝试点击，最多(.*)次')
+@step('我尝试点击"(.*?)"，如果不存在，我将点击"(.*?)"后再次尝试，最多(.*)次')
 def click_element_retry(step, element_a, element_b, num):
     element_a = world.element[element_a]
     element_b = world.element[element_b]
@@ -31,10 +37,22 @@ def click_element_retry(step, element_a, element_b, num):
             break
 
 
+@step('我清空"(.*?)"中的输入')
+def send_keys_for_element(step, element):
+    element = world.element[element]
+    world.driver.find_element(*element).clear()
+
+
 @step('我在"(.*?)"中输入"(.*?)"')
 def send_keys_for_element(step, element, text):
     element = world.element[element]
     world.driver.find_element(*element).send_keys(text)
+
+
+@step('我在"(.*?)"中输入自定义测试数据"(.*?)"')
+def send_keys_for_element(step, element, data):
+    element = world.element[element]
+    world.driver.find_element(*element).send_keys(world.test_data[data])
 
 
 @step('我获取"(.*?)"文本内容')
@@ -45,13 +63,13 @@ def get_element_text(step, element):
 
 @step('我点击文本"(.*?)"')
 def click_text(step, text):
-    element = (By.XPATH, '//*[text()="' + text + '"]')
+    element = (By.XPATH, '//*[text()="%s"]' % text)
     world.driver.find_element(*element).click()
 
 
-@step('我点击一下文本"(.*?)"，如果文本不存在，我将点击"(.*?)"后再次尝试点击，最多(.*)次')
+@step('我尝试点击文本"(.*?)"，如果文本不存在，我将点击"(.*?)"后再次尝试，最多(.*)次')
 def click_text_retry(step, text, element, num):
-    element_a = (By.XPATH, '//*[text()="' + text + '"]')
+    element_a = (By.XPATH, '//*[text()="%s"]' % text)
     element_b = world.element[element]
     for n in range(int(num)):
         try:
