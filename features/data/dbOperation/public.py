@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -
+# -*- coding: utf-8 -*-
 import pymysql
 import pymongo
-from urllib import parse
+import urllib
 from lettuce import *
 
 
-@step('我连接Mysql数据库，并执行"(.*?)"语句')
+@step(u'连接Mysql数据库，并执行"(.*?)"语句')
 def execute_mysql(step, sql):
     mysql_info = world.config['mysql_info']
     db = pymysql.connect(host=mysql_info['ip'], port=mysql_info['port'], user=mysql_info['mysql_account'],
@@ -18,11 +18,11 @@ def execute_mysql(step, sql):
     return cursor
 
 
-@step('我连接MonGoDB数据库')
+@step('连接MonGoDB数据库')
 def client_mongodb(step, database):
     mongodb_info = world.config['mongodb_info']
-    account = parse.quote_plus(mongodb_info['account'])
-    password = parse.quote_plus(mongodb_info['password'])
+    account = urllib.quote_plus(mongodb_info['account'])
+    password = urllib.quote_plus(mongodb_info['password'])
     mongodb = "mongodb://%s:%s@%s:%s/%s" % (account, password, mongodb_info['ip'], mongodb_info['port'], database)
     client = pymongo.MongoClient(mongodb)
     return client

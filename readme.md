@@ -1,7 +1,5 @@
-有非PO设计模式框架Demo在noPO分支
-
 # 框架介绍
-本框架使用Selenium、Appium、Lettuce工具，采用PO设计模式、关键字驱动、数据驱动、BDD，编写中文测试用例，实现Web、Android的UI自动化测试。
+本框架使用Selenium、Appium、Lettuce工具、关键字驱动、数据驱动、BDD，编写中文测试用例，实现Web、Android的UI自动化测试。
 
 由于考虑不同项目的情况，为保持灵活性，本框架对于代码编写部分并未进行过多的封装，使用本框架仍需要一些Python编码基础
 
@@ -11,37 +9,29 @@
 
 特性: UI自动化测试模版
 
-  场景: 亚马逊商城搜索商品,并检验深圳南山区有货
+  场景: 亚马逊商城搜索商品并加入购物车，检验是否添加成功以及金额
     Given 我打开谷歌浏览器
     And 我访问亚马逊首页
-    When 我在首页，搜索商品"牙刷"
-    And 我在商品搜索列表页，点击商品"飞利浦 Sonicare Easy Clean 电动牙刷带声波技术 hx6512"
+    When 我在"首页_搜索输入框"中输入"牙刷"
+    And 我点击"首页_搜索按钮"
+    And 我点击一下文本"惠百施 熊本熊 成人牙刷 （颜色随机）"，如果文本不存在，我将点击"商品列表页面_下一页按钮"后再次尝试点击，最多10次
     And 我切换到浏览器第2个页签
-    And 我在商品详情页，点击配送区域选择框
-    And 我在商品详情页，点击配送区域-省份框
-    And 我点击文字"广东"
-    And 我在商品详情页，点击配送区域-城市框
-    And 我点击文字"深圳市"
-    And 我在商品详情页，点击配送区域-区域框
-    And 我点击文字"南山区"
-    Then 我在商品详情页，获取现货情况文本
-    And 我比较文本与"现在有货"是否相等
+    And 我点击"商品详情页面_加入购物车按钮"
+    Then 我获取"商品加入购物车成功页面_加入结果"文本内容
+    And 我比较文本与"商品已加入购物车"是否相等
+    And 我获取"商品加入购物车成功页面_购物车金额"文本内容
+    And 我比较文本与"￥ 81.54"是否相等
     And 我关闭浏览器或设备
+
 ```
 
 
 ## 用例分层概念
-![](https://github.com/fengyibo963/DemoUITestLettuce/blob/master/docs/%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84(%E5%88%86%E5%B1%82%E6%A6%82%E5%BF%B5).png)
 
-该框架分层使用PO设计模式，同时做了一些改进
+该框架分层使用元素、操作分层的概念（非PO模式）
 
-* Page（页面）：封装页面为类，并且封装所有操作登录动作(行为)。
-* Suite（套件）：封装动作(行为)（例如下拉框选择需要三步"点击下拉框、选择选项、点击确认"，为了更好的复用可以将三步合为一个行为直接调用）。
+* elementList（元素列表）：被测系统所有的元素均经过自定义命名规范，并且确定定位方式和参数。
 * TestCase（用例）：使用动作(行为)拼接工作流，并且对于所有动作可以进行断言。
-
-由于某些操作自身就可以定义为动作，因为TestCase既可以使用Suite拼接，也可以使用Page进行拼接（或混合拼接）。
-
-如果为了更好的理解分层，同时增强TestCase脚本的可读性，可以封装所有动作仅使用Suite拼接TestCase（但同时代码量、维护成本会相应的增高，不推荐）。
 
 ## 关键字驱动与BDD
 本框架使用Lettuce工具实现关键字驱动和BDD，Lettuce实现函数关联关键字并且通过BDD(Given、When、Then)格式编写测试用例。
@@ -62,15 +52,16 @@
 
 为了做到真正的自动化扩展使用数据生成器，使用生成器按照规则生成想要的数据字典，在编写TestCase的使用直接调用生成器并提取参数即可
 
-## 编写规范介绍
-为了代码的可读性，指定了一些编写[规范提供参考（可根据自己喜好修改）](https://github.com/fengyibo963/DemoUITestLettuce/blob/master/docs/%E7%BC%96%E5%86%99%E8%AF%B4%E6%98%8E.md)
+## 测试报告
+运行会自动生成测试报告，会自动在根目录下创建result文件用于存储测试报告，每日创建一个日期为名的文件夹，报告名称为"时分秒_suite名称_用例名称"
 
 ## 项目结构详细介绍
 
-![](https://github.com/fengyibo963/DemoUITestLettuce/blob/master/docs/%E9%A1%B9%E7%9B%AE%E7%9B%AE%E5%BD%95.png)
+![](https://github.com/fengyibo963/DemoUITestLettuce/blob/noPO/docs/%E9%A1%B9%E7%9B%AE%E7%9B%AE%E5%BD%95.png)
 
 ```
 |-- config
+|    -- android.yaml  # 安卓设备和APP信息
 |    -- env.yaml  # 环境变量
 |    -- envSpecify.py  # env环境切换方法
 |-- features
@@ -83,10 +74,6 @@
 |            -- xxxx.py  # 某些特殊数据的生成
 |        -- dbOperation  # 数据库数据操作  
 |            -- xxxx.py  # 某些数据库操作的封装
-|    -- pages
-|        -- xxxx.py  # 该产品某一页面
-|    -- suites
-|        --xxxx.py  # 该产品通用封装的模块
 |    -- testcases
 |        -- xxx.feature  # 测试用例文件
 |-- runcase.py     # 通过参数执行任一测试用例或测试用例集合
@@ -95,21 +82,13 @@
 
 # 环境/使用介绍
 ## 环境安装说明
-* 安装Python3环境
+* 安装Python2环境
 * 安装相关模块库
 ```
-pip3 install -r requirements.txt
+sudo pip install -r requirements.txt
 ```
-## Lettuce
-* 替换Lettuce版本
-
-由于官方lettuce只支持python2，需替换lettuce版本
+## 检查Lettuce安装
 ```
-pip3 uninstall lettuce # 卸载lettuce
-git clone https://github.com/sgpy/lettuce.git  # clone大佬源码在任意位置
-cd lettuce  # 进入源码项目
-git checkout -b py3 origin/py3  # 创建python3分支并clone
-sudo python3 setup.py install  # 安装支持python3的版本
 lettuce --version  # 检查版本号看是否安装成功
 ```
 ## Selenium
@@ -151,23 +130,24 @@ runcase.py脚本为功能测试用例执行统一入口
 
 **查看帮助--help**
 ```
-python3 runcase.py --help
+python runcase.py --help
 usage: runcase.py [-h] [--env ENV] [--collection COLLECTION] --name NAME
 
 optional arguments:
   -h, --help            show this help message and exit
   --env ENV, -e ENV     环境变量参数，非必要参数
-  --collection COLLECTION, -c COLLECTION
+  --suite SUITE, -s SUITE
                         测试用例集合名称，非必要参数(testcases中用于划分用例集合的文件夹名,当未划分用例集合时不需要)
-  --name NAME, -n NAME  测试用例名称，必要参数，例：case1 或者 case1,case2
+  --case CASE, -c CASE  测试用例名称，非必要参数，多个时以,隔开r如case1,case2
 ```
 
 **执行用例**
 
 ```
-python3 runcase.py -n $env -c $collection -n $name  # 在$env环境下,testcases/$collection文件夹路径,$name文件名称或all(all即可该文件下所有用例)
-例：
-python3 runcase.py -n goodsInStock
-python3 runcase.py -n all
-python3 runcase.py -c smoke -n all
+python runcase.py -n $env -s $suite -c $case  # 在$env环境下,testcases/$suite文件夹路径,$case文件名称：
+python runcase.py  # 执行所有用例
+python runcase.py -s smoke  # 执行testcases/smoke文件路径下所有用例
+python runcase.py -c login  # 执行testcases/login.feature用例
+python runcase.py -s smoke -c login  # 执行testcases/smoke/login.feature用例
+python runcase.py -e pre -s smoke -c login  # 在pre环境执行testcases/smoke/login.feature用例
 ```

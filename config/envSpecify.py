@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -
+# -*- coding: utf-8 -*-
 import os
 import re
 
@@ -33,7 +33,7 @@ class EnvSpecify:
             elif env is None:
                 pass
             else:
-                print("环境参数错误，请输入" + str(lst) + "中的一种")
+                print "环境参数错误，请输入" + str(lst) + "中的一种"
                 quit()
 
 

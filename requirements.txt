@@ -1,5 +1,5 @@
 selenium
-Appium-Python-Client
+Appium-Python-Client==0.52
 PyYAML>=5.1.1
 PyMySQL
 pymongo

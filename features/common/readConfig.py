@@ -1,16 +1,17 @@
-# -*- coding:utf-8 -
+# -*- coding: utf-8 -*-
 import os
 import yaml
 from lettuce import *
 cur_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 
-@step('我获取系统环境变量参数')
+@step(u'获取系统环境变量参数')
 def file_creation(step):
     # 获取文件位置
     file_path = FileCreation().file_creation()
     # 读取环境变量
-    world.config = ReadConfig().read_config(file_path)
+    config = ReadConfig().read_config(file_path)
+    world.config = config
 
 
 # 创建默认配置文件
@@ -27,7 +28,7 @@ class FileCreation:
 
         # 如果没有config/env.yaml,自动创建并写入默认值
         if not os.path.exists(self.env_yaml_path):
-            with open(self.env_yaml_path, 'w', encoding='utf-8') as file:
+            with open(self.env_yaml_path, 'w') as file:
                 file.write('# host环境IP\nhost: https://www.amazon.cn\n'
                            '# mysql服务信息\nmysql_info:\n  ip: xxxx\n  port: 3306\n  account: xxxx\n  password: xxxx\n'
                            '# mongodb服务信息\nmongodb_info:\n  ip: xxxx\n  port: 3306\n  account: xxxx\n  password: xxxx\n')
@@ -35,7 +36,7 @@ class FileCreation:
 
         # 如果没有config/android.yaml,自动创建并写入默认值
         if not os.path.exists(self.android_path):
-            with open(self.android_path, 'w', encoding='utf-8') as file:
+            with open(self.android_path, 'w') as file:
                 file.write('app_info:\n'
                            '  # APP名称\n  appName: xxx\n'
                            '  # APP包名\n  appPackage: xxx\n'
@@ -61,7 +62,7 @@ class FileCreation:
 class ReadConfig:
 
     def read_yaml_file(self, file_path):
-        with open(file_path, 'r', encoding='utf-8') as file:
+        with open(file_path, 'r') as file:
             # 使用load方法将读出的字符串转字典
             content = yaml.full_load(file)
             file.close()
