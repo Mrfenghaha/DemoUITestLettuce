@@ -6,13 +6,48 @@ from appium import webdriver as appium_driver
 cur_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 
-@step(u'打开谷歌浏览器')
-def get_driver_for_chrome(step):
+@step(u'打开(.*)浏览器')
+def get_driver_for_browser(step, browser):
     # 加载通用
     step.behave_as(u'And 获取系统环境变量参数\n'
                    u'And 获取被测系统元素列表\n'
                    u'And 创建自定义测试数据')
-    world.driver = selenium_driver.Chrome()  # 获取driver
+    if browser == "谷歌":
+        # 谷歌浏览器规避监测
+        option = selenium_driver.ChromeOptions()
+        option.add_experimental_option('excludeSwitches', ['enable-automation'])
+        # 启动谷歌浏览器
+        world.driver = selenium_driver.Chrome(options=option)  # 获取driver，并设置规避监测
+    elif browser == "谷歌无头":
+        # 谷歌浏览器规避监测
+        option = selenium_driver.ChromeOptions()
+        option.add_experimental_option('excludeSwitches', ['enable-automation'])
+        # 设置谷歌无头浏览器
+        chrome_options = selenium_driver.ChromeOptions()
+        chrome_options.add_argument('--headless')
+        # 启动谷歌浏览器
+        world.driver = selenium_driver.Chrome(chrome_options=chrome_options, options=option)  # 使用无头浏览器，获取driver，并设置规避监测
+    elif browser == "火狐":
+        # 设置谷火狐无头浏览器
+        options = selenium_driver.FirefoxOptions()
+        options.add_argument('--headless')
+        # 启动火狐浏览器
+        world.driver = selenium_driver.Firefox()  # 获取driver
+    elif browser == "火狐无头":
+        # 设置谷火狐无头浏览器
+        options = selenium_driver.FirefoxOptions()
+        options.add_argument('--headless')
+        # 启动火狐浏览器
+        world.driver = selenium_driver.Firefox(options=options)  # 使用无头浏览器，获取driver
+    elif browser == "Safari":
+        # 启动safari浏览器
+        world.driver = selenium_driver.Safari()
+    else:
+        # 谷歌浏览器规避监测
+        option = selenium_driver.ChromeOptions()
+        option.add_experimental_option('excludeSwitches', ['enable-automation'])
+        # 启动谷歌浏览器
+        world.driver = selenium_driver.Chrome('%s' % driver_path, options=option)  # 获取driver，并设置规避监测
     world.driver.maximize_window()  # 将浏览器窗口最大化
     world.driver.implicitly_wait(10)  # 设置隐形等待直至加载完成
 
@@ -63,9 +98,9 @@ def close(step):
 @step(u'访问系统首页')
 def visit_website(step):
     world.driver.get(world.config['host'])
-    step.behave_as(u'Given 我查询"浏览器私密链接_高级按钮"是否存在')
-    if world.exist is True:
-        step.behave_as(u'Given 我点击"浏览器私密链接_高级按钮"\n'
-                       u'And 我点击"浏览器私密链接_继续访问按钮')
-    else:
-        pass
+    # step.behave_as(u'Given 我查询"浏览器私密链接_高级按钮"是否存在')
+    # if world.exist is True:
+    #     step.behave_as(u'Given 我点击"浏览器私密链接_高级按钮"\n'
+    #                    u'And 我点击"浏览器私密链接_继续访问按钮')
+    # else:
+    #     pass
